@@ -9,23 +9,25 @@ echo [*] Writing Code...
 
 cat <<'EOF' > $PREFIX/bin/spt-exec
 #!/bin/bash
+# Aqui usamos o -y e mandamos tudo para o buraco negro
 echo [*] Installing Necessary packages...
-pkg install proot-distro -y 2>/dev/null
+pkg install proot-distro -y > /dev/null 2>&1
 
+echo 'echo "clear"' >> $HOME/.bashrc
 echo 'echo "hello to termux customized in komikomizu team!"' >> $HOME/.bashrc
 echo 'echo "apt install <package>"' >> $HOME/.bashrc
-echo 'echo "apt delete <package>"' >> $HOME/.bashrc
-echo 'echo "apt search <package>"' >> $HOME/.bashrc
 
-proot-distro install ubuntu 2>/dev/null
+# Escondendo a instalação do Ubuntu (essa parte demora, então o silêncio é bom)
+echo [*] Downloading Ubuntu RootFS...
+proot-distro install ubuntu > /dev/null 2>&1
 
-proot-distro login ubuntu -- sh -c "echo 'export PS1=\"Ubuntu@User # \"' >> /root/.bashrc"
-proot-distro login ubuntu -- sh -c "apt update && apt install sudo -y"
+# Configurando internamente sem mostrar logs
+proot-distro login ubuntu -- sh -c "echo 'export PS1=\"Ubuntu@User # \"' >> /root/.bashrc" > /dev/null 2>&1
+proot-distro login ubuntu -- sh -c "apt update && apt install sudo -y" > /dev/null 2>&1
 
 echo [*] Configuring Shell...
 shred -u $0
 EOF
 
 chmod +x $PREFIX/bin/spt-exec
-
 echo [*] installed! execute spt-exec to activate
